@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+	"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- DataSource Definition standalone -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/library" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+	<bean id="mySessionFactory" 
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource"/>
+		  <property name="annotatedClasses">
+		    <list>
+				<value>com.gcit.lms.entities.Author</value>
+				<value>com.gcit.lms.entities.Book</value>
+				<value>com.gcit.lms.entities.BookCopies</value>
+				<value>com.gcit.lms.entities.BookCopiesId</value>
+				<value>com.gcit.lms.entities.BookLoans</value>
+				<value>com.gcit.lms.entities.BookLoansId</value>
+				<value>com.gcit.lms.entities.Borrower</value>
+				<value>com.gcit.lms.entities.LibraryBranch</value>
+				<value>com.gcit.lms.entities.Publisher</value>
+		    </list>
+		  </property>
+	    <property name="hibernateProperties">
+				<props>
+					<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+					<prop key="hibernate.hbm2ddl.auto">none</prop>
+					<prop key="hibernate.jdbc.batch_size">0</prop>
+					<prop key="hibernate.show_sql">true</prop>
+					<prop key="hibernate.format_sql">true</prop>
+	            </props>
+	    </property>
+	</bean>
+
+	<!-- Hibernate JDBC Template -->
+	<bean id="hibernateTemplate" 
+		class="org.springframework.orm.hibernate3.HibernateTemplate">
+	    <property name="sessionFactory">
+	        <ref bean="mySessionFactory"/>
+	    </property>
+	</bean>
+
+	<bean id="adminService" class="com.gcit.lms.service.AdminService">
+ 		<property name="template"><ref bean="hibernateTemplate"/></property>
+<!-- 		<constructor-arg><ref bean="hibernateTemplate"/></constructor-arg>
+ -->	</bean>
+
+	<bean id="librarianService" class="com.gcit.lms.service.LibrarianService">
+ 		<property name="template"><ref bean="hibernateTemplate"/></property> 
+	</bean>
+
+	<bean id="borrowerService" class="com.gcit.lms.service.BorrowerService">
+		<property name="template"><ref bean="hibernateTemplate"/></property>
+	</bean>
+
+	<bean id="author" class="com.gcit.lms.entities.Author" />
+</beans>
